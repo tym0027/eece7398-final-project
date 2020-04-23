@@ -67,8 +67,6 @@ class ICTimNet(nn.Module):
             self.batchNormIC4 = nn.BatchNorm2d(4) # unknown size currently... 
         
         self.linear1 = nn.Linear(4096, 2048)
-        # self.linear1 = nn.Linear(131072, 8192)
-        # self.linear2 = nn.Linear(8192, 4096)
         self.linear2 = nn.Linear(2048, 1024) # 3072 -> 2048
         self.linear3 = nn.Linear(1024, 1024)
         self.linear4 = nn.Linear(1024, 512)
@@ -76,11 +74,15 @@ class ICTimNet(nn.Module):
         self.linear5 = nn.Linear(512, 10)
         
 
-    def forward(self, x):
+    def forward(self, x, p0, p1, p2, p3):
         # My code
         orig = x
         self.batch_size = x.shape[0]
         h, w = x.shape[2:]
+        self.p0 = p0
+        self.p1 = p1
+        self.p2 = p2
+        self.p3 = p3
 
         ### Chunk 1
         # IC Layer

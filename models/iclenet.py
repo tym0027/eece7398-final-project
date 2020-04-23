@@ -32,16 +32,17 @@ class ICLeNet(nn.Module):
         self.p1 = p1;
         self.p2 = p2;
 
-    def forward(self, x):
+    def forward(self, x, p0, p1, p2):
         orig = x
         self.batch_size = x.shape[0]
         h, w = x.shape[2:]
-        print(x.shape)
+        self.p0 = p0
+        self.p1 = p1
+        self.p2 = p2
+
         # Chunk 1
         if self.ICL:
-            # x = x.view(self.batch_size, -1)
             out = F.dropout(self.batchNormIC1(x), p=self.p0, training=self.training)
-            # out = out.view(self.batch_size, 32, h, w)
         else:
             out = x
 
@@ -51,18 +52,14 @@ class ICLeNet(nn.Module):
 
         # Chunk 2
         if self.ICL:
-            # out = out.view(self.batch_size, -1)
             out = F.dropout(self.batchNormIC2(out), p=self.p1, training=self.training)
-            # out = out.view(self.batch_size, 32, h, w)
 
         out = F.relu(self.conv2(out))
         out = F.max_pool2d(out, 2)
         
         # Chunk 3
         if self.ICL:
-            # out = out.view(self.batch_size, -1)
             out = F.dropout(self.batchNormIC3(out), p=self.p2, training=self.training)
-            # out = out.view(self.batch_size, 32, h, w)
 
         out = out.view(out.size(0), -1)
         out = F.relu(self.fc1(out))
